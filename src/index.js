@@ -1,4 +1,7 @@
-import { createStore } from '@reduxjs/toolkit';
+// import { configureStore, createStore } from '@reduxjs/toolkit';
+import { configureStore, createStore } from './toolkit';
+import logger from 'redux-logger';
+import thunk from 'redux-thunk';
 
 
 const ADD = 'ADD';
@@ -23,11 +26,17 @@ function reducer(state={number: 0}, action) {
   }
 }
 
-const store = createStore(reducer);
+// const store = createStore(reducer);
+const store = configureStore({
+  reducer,
+  middlewares: [logger, thunk],
+  preloadedState: {number: 0}
+})
 
 const valueEle = document.getElementById('value');
 const addEle = document.getElementById('add');
 const minusEle = document.getElementById('minus');
+const asyncEle = document.getElementById('async');
 
 // subscribe  dispatch getState
 
@@ -45,4 +54,13 @@ addEle.addEventListener('click', () => {
 
 minusEle.addEventListener('click', () => {
   store.dispatch(minus());
+})
+
+asyncEle.addEventListener('click', () => {
+  // 有个问题 为啥dispatch是从这个传递进去的  原来的dispatch 是不能派发函数的 派发的是一个纯对象
+  store.dispatch(function(dispatch) {  
+    setTimeout(() => {
+      dispatch(add());
+    },1000)
+  })
 })
