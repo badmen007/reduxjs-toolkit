@@ -1,5 +1,5 @@
-// import { configureStore, createAction } from '@reduxjs/toolkit';
-import { configureStore, createStore, createAction } from './toolkit';
+import { configureStore, createAction, createReducer, createSlice } from '@reduxjs/toolkit';
+// import { configureStore, createStore, createAction, createReducer } from './toolkit';
 
 import logger from 'redux-logger';
 import thunk from 'redux-thunk';
@@ -16,6 +16,20 @@ import thunk from 'redux-thunk';
 //   return {type: MINUS};
 // }
 
+// function reducer(state={number: 0}, action) {
+//   switch(action.type) {
+//     case add.type: 
+//       return {number: state.number + action.payload};
+//     case minus.type: 
+//       return {number: state.number - 1};
+//     default: 
+//       return state;
+//   }
+// }
+
+// const store = createStore(reducer);
+
+
 const add = createAction('ADD', function(amount){ // 就是这里可以改变传递的参数的值
   return {payload: amount * 10}
 })
@@ -23,18 +37,12 @@ const minus = createAction('MINUS', amount => {
   return {payload: amount * 10}
 })
 
-function reducer(state={number: 0}, action) {
-  switch(action.type) {
-    case add.type: 
-      return {number: state.number + action.payload};
-    case minus.type: 
-      return {number: state.number - 1};
-    default: 
-      return state;
-  }
-}
+// 改造上面的reducer
+const reducer = createReducer({number: 0}, {
+  [add.type]: (state, action) => ({number: state.number + action.payload}),
+  [minus.type]: (state, action) => ({number: state.number - 1})
+})
 
-// const store = createStore(reducer);
 const store = configureStore({
   reducer,
   middlewares: [logger, thunk],
